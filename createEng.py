@@ -48,7 +48,7 @@ def createRemoteEngine(enableDebugInStudio = True, name="testName", env = "defau
     tmp = name + str(datetime.now())
     name = tmp.replace(" ", "")
     ids = getWorkSpaceAndEnvIds(env, pToken)
-    vmPubIp = open('/home/python/windowsPublicIP.txt', 'r')
+    vmPubIp = open('/home/python/ubuntuPublicIP.txt', 'r')
     Ip = vmPubIp.read()
 
     if enableDebugInStudio == True:
