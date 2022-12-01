@@ -1,0 +1,42 @@
+- name: Remove Azure Infrastructure
+  hosts: localhost
+  connection: local
+  tasks:
+  
+  
+  - include_vars: /root/vars/ubuntu_vars.yaml  
+
+  - name: CRemove VM
+    azure_rm_virtualmachine:
+      resource_group: "{{vm_resource_group}}"
+      name: "{{ vm_name }}"
+      remove_on_absent: all_autocreated
+      state: absent 
+  - name: Remove virtual network interface card
+    azure_rm_networkinterface:
+      resource_group: "{{vm_resource_group}}"
+      name: "{{ vm_network_interface }}"
+      state: absent 
+    register: output_ip_address
+  - name: Remove Network Security Group 
+    azure_rm_securitygroup:
+      resource_group: "{{vm_resource_group}}"
+      name: "{{ vm_security_group }}"
+      state: absent 
+  - name: Remove public IP
+    azure_rm_publicipaddress:
+      resource_group: "{{vm_resource_group}}"
+      #allocation_method: Static
+      name: "{{ vm_public_ip }}"
+      state: absent
+  - name: Remove subnet
+    azure_rm_subnet:
+      resource_group: "{{vm_resource_group}}"
+      name: "{{ virtual_subnet }}"
+      virtual_network: "{{ virtual_network }}"
+      state: absent
+  - name: Remove virtual network
+    azure_rm_virtualnetwork:
+      resource_group: "{{vm_resource_group}}"
+      name: "{{ virtual_network }}"
+      state: absent 
