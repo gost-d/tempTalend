@@ -1,0 +1,15 @@
+vm_resource_group: ubuntu
+vm_location: eastus
+virtual_network: ubuntuTalendNet
+virtual_subnet: ubuntuTalendSubnet
+vm_public_ip: ubuntuTalendPID
+vm_security_group: ubuntuTalendSecurityGroup
+vm_network_interface: ubuntuNIC
+vm_name: ubuntuTalendVM
+vm_size: Standard_B2s
+vm_username: azureuser
+os_offer: 0001-com-ubuntu-server-focal
+os_publisher: Canonical
+vm_sku: 20_04-lts 
+os_version: latest
+

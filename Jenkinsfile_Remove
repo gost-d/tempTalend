@@ -1,0 +1,31 @@
+node {
+
+    stage('Checkout') {
+    checkout scm 
+    }
+
+    stage('Copy Docker Images') {
+        
+        withCredentials([usernamePassword(credentialsId: 'nexus_user', usernameVariable: 'nexus_username', passwordVariable: 'nexus_password')]) {
+            sh('docker login -u $nexus_username -p $nexus_password http://172.22.6.131:8083')
+            sh('docker pull 172.22.6.131:8083/devops/ansible:1.0')
+            sh('docker pull 172.22.6.131:8083/devops/python:1.1')
+        }
+    }
+    stage('Remove infrastructure') {
+        withCredentials([azureServicePrincipal('AzureJenkins')]) {
+            
+            if (params.ostype == 'windows') {
+                sh('docker run -v /home/jenkins/jenkins_home/workspace/Talend_Remote_Engine_Remove:/home/ansible --env AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID --env AZURE_CLIENT_ID=$AZURE_CLIENT_ID --env AZURE_SECRET=$AZURE_CLIENT_SECRET --env AZURE_TENANT=$AZURE_TENANT_ID --rm --rm 172.22.6.131:8083/devops/ansible:1.0  ansible-playbook --extra-vars "timestamp_name=$timestamp_vm_name" /home/ansible/${ostype}/removeInfrastructure.yaml')
+            } else {
+                sh('docker run -v /home/jenkins/jenkins_home/workspace/Talend_Remote_Engine_Remove:/home/ansible --env AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID --env AZURE_CLIENT_ID=$AZURE_CLIENT_ID --env AZURE_SECRET=$AZURE_CLIENT_SECRET --env AZURE_TENANT=$AZURE_TENANT_ID --rm --rm 172.22.6.131:8083/devops/ansible:1.0  ansible-playbook --extra-vars "timestamp_name=$timestamp_vm_name" /home/ansible/${ostype}/removeInfrastructure.yaml')
+            }
+
+            
+        }   
+    }
+
+    stage('Remove TRE from Talend Cloud') {
+        sh('docker run -v /home/jenkins/jenkins_home/workspace/Talend_Remote_Engine_Create_Install:/home/python --rm 172.22.6.131:8083/devops/python:1.1 python3 /home/python/deleteEng.py $engineName $talendToken')
+    }
+}

@@ -1,0 +1,86 @@
+ - name: Install Remote Engine Playbook
+   gather_facts: true
+   hosts: all
+   become: true
+
+   vars: 
+     ansible_user: azureuser 
+
+   tasks:
+    
+    - name: Install OpenJDK11
+      become: yes
+      apt:
+        name: openjdk-11-jdk
+        state: present
+        update_cache : true 
+    
+    - name: Install unzip 
+      ansible.builtin.apt:
+        name: unzip
+        state: present 
+    
+    - name: Download Talend Remote Engine 
+      become: yes
+      ansible.builtin.copy:
+        src: '/home/ansible/Talend-RemoteEngine-V{{ tre_version }}.zip'
+        dest: '/home/{{ ansible_user }}/'
+    
+    - name: Copy key for Talend Remote Engine 
+      ansible.builtin.copy:
+        src: /home/ansible/preauthorized.key.cfg
+        dest: '/home/{{ ansible_user }}/'
+        mode: '0644'
+    
+    - name: Extract Talend Remote Engine file
+      ansible.builtin.unarchive:
+        src: '/home/{{ ansible_user }}/Talend-RemoteEngine-V{{ tre_version }}.zip'
+        dest: '/home/{{ ansible_user }}/'
+        remote_src: true 
+    
+    - name: customize /etc/environment
+      become: true 
+      ansible.builtin.lineinfile:
+        dest: "/etc/environment"
+        state: present
+        line: "JAVA_HOME=/usr/lib/jvm/java-1.11.0-openjdk-amd64"
+
+    - name: Prepare environment
+      become: true
+      ansible.builtin.shell: |
+        export PAIRING_KEY=$(cat preauthorized.key.cfg)
+        echo "remote.engine.pre.authorized.key = $PAIRING_KEY" > 'Talend-RemoteEngine-V{{ tre_version }}/etc/preauthorized.key.cfg'
+        echo "pairing.service.url=https://pair.eu.cloud.talend.com" > 'Talend-RemoteEngine-V{{ tre_version }}/etc/org.talend.ipaas.rt.pairing.client.cfg'
+    
+    - name: Change jobserver config file for Talend Sudio connection
+      ansible.builtin.lineinfile:
+        path: /home/{{ ansible_user }}/Talend-RemoteEngine-V{{ tre_version }}/etc/org.talend.remote.jobserver.server.cfg
+        regexp: "{{ item.var1 }}"
+        line: "{{ item.var2 }}"
+      with_items: 
+        - { var1: "org.talend.remote.jobserver.server.TalendJobServer.COMMAND_SERVER_HOST=*", var2: org.talend.remote.jobserver.server.TalendJobServer.COMMAND_SERVER_HOST=0.0.0.0 }
+        - { var1: "org.talend.remote.jobserver.server.TalendJobServer.FILE_SERVER_HOST=*", var2: org.talend.remote.jobserver.server.TalendJobServer.FILE_SERVER_HOST=0.0.0.0} 
+       
+    - name: Install Remote Engine
+      become: true
+      ansible.builtin.shell: |
+        cd '/home/{{ ansible_user }}/Talend-RemoteEngine-V{{ tre_version }}/bin'
+        (echo feature:install wrapper; echo wrapper:install -n talend-remote-engine; echo logout) | sh trun
+        ls -al '/home/{{ ansible_user }}/Talend-RemoteEngine-V{{ tre_version }}/bin/talend-remote-engine.service'
+      register: result 
+      until: result is not failed
+      delay: 10 
+      retries: 5 
+      environment: 
+        JAVA_HOME: /usr/lib/jvm/java-1.11.0-openjdk-amd64
+    - name: Copy talend-remote-engine.service
+      become: yes
+      ansible.builtin.copy:
+        src: '/home/{{ ansible_user }}/Talend-RemoteEngine-V{{ tre_version }}/bin/talend-remote-engine.service'
+        dest: /etc/systemd/system/
+        remote_src: true 
+    - name: Start Talend Remote Engine service
+      ansible.builtin.service:
+        name: talend-remote-engine.service
+        state: started
+        enabled: yes

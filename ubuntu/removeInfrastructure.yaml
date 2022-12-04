@@ -1,0 +1,47 @@
+- name: Remove Azure Infrastructure
+  hosts: localhost
+  connection: local
+  tasks:
+  
+  
+  - include_vars: /home/ansible/vars/ubuntu_vars.yaml 
+
+  - name: CRemove VM
+    azure_rm_virtualmachine:
+      resource_group: "{{vm_resource_group}}-{{ timestamp_name }}"
+      name: "{{ vm_name }}-{{ timestamp_name }}"
+      remove_on_absent: all_autocreated
+      state: absent 
+  - name: Remove virtual network interface card
+    azure_rm_networkinterface:
+      resource_group: "{{vm_resource_group}}-{{ timestamp_name }}"
+      name: "{{ vm_network_interface }}-{{ timestamp_name }}"
+      state: absent 
+    register: output_ip_address
+  - name: Remove Network Security Group 
+    azure_rm_securitygroup:
+      resource_group: "{{vm_resource_group}}-{{ timestamp_name }}"
+      name: "{{ vm_security_group }}-{{ timestamp_name }}"
+      state: absent 
+  - name: Remove public IP
+    azure_rm_publicipaddress:
+      resource_group: "{{vm_resource_group}}-{{ timestamp_name }}"
+      #allocation_method: Static
+      name: "{{ vm_public_ip }}-{{ timestamp_name }}"
+      state: absent
+  - name: Remove subnet
+    azure_rm_subnet:
+      resource_group: "{{vm_resource_group}}-{{ timestamp_name }}"
+      name: "{{ virtual_subnet }}-{{ timestamp_name }}"
+      virtual_network: "{{ virtual_network }}-{{ timestamp_name }}"
+      state: absent
+  - name: Remove virtual network
+    azure_rm_virtualnetwork:
+      resource_group: "{{vm_resource_group}}-{{ timestamp_name }}"
+      name: "{{ virtual_network }}-{{ timestamp_name }}"
+      state: absent 
+  - name: Create resource group
+    azure_rm_resourcegroup:
+      name: "{{vm_resource_group}}-{{ timestamp_name }}"
+      state: absent
+      force_delete_nonempty: true
