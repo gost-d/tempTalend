@@ -90,7 +90,7 @@ try:
     pToken = "Bearer wHiwDdZWTTasSdvCFIxNmwcSXglP2ozKgnU7qdpKXP1-Sh1z3ygwyJcNkVF6z4H5"
     name="testName"
     key, engineName = createRemoteEngine(vmDistribution=vmDistribution, enableDebugInStudio=enableDebugInStudio, name=name, env=env, personalToken = pToken)
-    with open('/home/python/preauthorized.key.cfg', 'w') as f:
+    with open('/home/python/' + vmDistribution + 'preauthorized.key.cfg', 'w') as f:
         f.write(key)
 except TypeError:
     print("\n Please Check Your Access Token \n")
