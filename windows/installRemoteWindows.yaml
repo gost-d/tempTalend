@@ -57,14 +57,14 @@
   
   - name: Copy Talend Remote Engine file
     win_copy:
-      src: /home/ansible/preauthorized.key.cfg
+      src: /home/ansible/windowspreauthorized.key.cfg
       dest: 'C:\Users\azureuser\'
   
   - name: Change configuration files for Talend
     community.windows.win_lineinfile:
       path: 'C:\Users\azureuser\Talend-RemoteEngine-V{{ tre_version }}\etc\preauthorized.key.cfg'
       regexp: 'remote.engine.pre.authorized.key'
-      line: "remote.engine.pre.authorized.key = {{ lookup('file','/home/ansible/preauthorized.key.cfg') }}"
+      line: "remote.engine.pre.authorized.key = {{ lookup('file','/home/ansible/windowspreauthorized.key.cfg') }}"
   
   - name: Change jobserver config file for Talend Sudio connection
     community.windows.win_lineinfile:
