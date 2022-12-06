@@ -41,4 +41,5 @@
       state: absent
   - azure_rm_resourcegroup:
       name: "{{vm_resource_group}}-{{ timestamp_name }}"
-      state: absent 
+      state: absent
+      force_delete_nonempty: true
