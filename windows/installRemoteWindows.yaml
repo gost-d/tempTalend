@@ -97,7 +97,8 @@
       - "agent.buffer.jms.password=tadmin"
   - name: Create file 
     ansible.windows.win_file:
-      path: C:\_SXS\TalendRemoteEngine\etc\org.ops4j.pax.logging.cfg 
+      path: C:\_SXS\TalendRemoteEngine\etc\org.ops4j.pax.logging.cfg
+      state: touch 
        
   - name: Install Remote Talend Engine
     ansible.windows.win_powershell: 
