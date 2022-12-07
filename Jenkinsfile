@@ -16,9 +16,6 @@ node {
     
     stage('Create infrastructure') {
         
-        wrap([$class: 'BuildUser']) {
-          def user = env.BUILD_USER_ID
-        
           withCredentials([azureServicePrincipal("talendAzure${user}")]) {
             if (params.ostype == 'windows') {
                 sh('docker run -v /home/jenkins/jenkins_home/workspace/Talend_Test:/home/ansible --env AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID --env AZURE_CLIENT_ID=$AZURE_CLIENT_ID --env AZURE_SECRET=$AZURE_CLIENT_SECRET --env AZURE_TENANT=$AZURE_TENANT_ID --rm --rm 172.22.6.131:8083/devops/ansible:1.0  ansible-playbook -vvv /home/ansible/${ostype}/createVM.yaml')
@@ -27,7 +24,7 @@ node {
                 sh('docker run -v /home/jenkins/jenkins_home/workspace/Talend_Test:/home/ansible --env AZURE_SUBSCRIPTION_ID=$AZURE_SUBSCRIPTION_ID --env AZURE_CLIENT_ID=$AZURE_CLIENT_ID --env AZURE_SECRET=$AZURE_CLIENT_SECRET --env AZURE_TENANT=$AZURE_TENANT_ID --rm --rm 172.22.6.131:8083/devops/ansible:1.0  ansible-playbook -vvv /home/ansible/${ostype}/createVM.yaml')
             }
         }
-        }
+        
     }
 
 } 
