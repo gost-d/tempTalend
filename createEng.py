@@ -6,10 +6,10 @@ from datetime import datetime
 import sys
 
 
-pToken = "Bearer "
+pToken = "Bearer wHiwDdZWTTasSdvCFIxNmwcSXglP2ozKgnU7qdpKXP1-Sh1z3ygwyJcNkVF6z4H5"
 
 
-def getWorkSpaceAndEnvIds(env="default", personalToken = pToken):
+def getWorkSpaceAndEnvIds(env="default", wrkSpaceOwner = "", wrkSpaceName = "", personalToken = pToken):
     """
     Function to get workspace and environment id`s
     @env environment name same as it in a cloud
@@ -26,17 +26,20 @@ def getWorkSpaceAndEnvIds(env="default", personalToken = pToken):
     txtResp = response.text
     jsonResp = json.loads(txtResp)
     for i in jsonResp:
-        if i["environment"]["name"] == env and i["owner"] == "sergei.raikov":
+        if i["environment"]["name"] == env and i["owner"] == wrkSpaceOwner and i["name"] == wrkSpaceName:
             wrkSpcId = i["id"]
             envId = i["environment"]["id"]
             envData = i
             break
-    print("Information About Environment \nRemote Engine Will Be On\n")
-    print(envData)
+    if envId == "" or wrkSpcId == "":
+        print("No such environment or workspace! Engine Will Not Be Created!")
+    else:
+        print("Information About Environment \nRemote Engine Will Be On\n")
+        print(envData)
     return wrkSpcId, envId
 
 
-def createRemoteEngine(vmDistribution = 'ubuntu', enableDebugInStudio = True, name="testName", env = "R&D", personalToken = pToken):
+def createRemoteEngine(vmDistribution = 'ubuntu', enableDebugInStudio = True, wrkSpaceOwner = "", wrkSpaceName = "", name="testName", env = "R&D", personalToken = pToken):
     """
     Function creates remote engine at Talend Cloud
     @vmDistribution distribution of virtual machine ubuntu or windows
@@ -50,7 +53,7 @@ def createRemoteEngine(vmDistribution = 'ubuntu', enableDebugInStudio = True, na
     urlRemoteEng = "https://api.eu.cloud.talend.com/tmc/v1.3/runtimes/remote-engines"
     tmp = name + str(datetime.now())
     name = tmp.replace(" ", "")
-    ids = getWorkSpaceAndEnvIds(env, pToken)
+    ids = getWorkSpaceAndEnvIds(env,wrkSpaceOwner, wrkSpaceName, pToken)
     vmPubIp = open('/home/python/' + vmDistribution + 'PublicIP.txt', 'r')
     Ip = vmPubIp.read()
 
@@ -87,10 +90,12 @@ try:
     vmDistribution = sys.argv[1]
     enableDebugInStudio = sys.argv[2]
     env = sys.argv[3]
-    pToken = "Bearer wHiwDdZWTTasSdvCFIxNmwcSXglP2ozKgnU7qdpKXP1-Sh1z3ygwyJcNkVF6z4H5"
+    workSpaceName = sys.argv[4]
+    workSpaceOwner = sys.argv[5]
+    pToken = sys.argv[6]
     name="testName"
-    key, engineName = createRemoteEngine(vmDistribution=vmDistribution, enableDebugInStudio=enableDebugInStudio, name=name, env=env, personalToken = pToken)
-    with open('/home/python/' + vmDistribution + 'preauthorized.key.cfg', 'w') as f:
+    key, engineName = createRemoteEngine(vmDistribution=vmDistribution, enableDebugInStudio=enableDebugInStudio, wrkSpaceName=workSpaceName, wrkSpaceOwner = workSpaceOwner, name=name, env=env, personalToken = pToken)
+    with open('/home/python/preauthorized.key.cfg', 'w') as f:
         f.write(key)
 except TypeError:
     print("\n Please Check Your Access Token \n")
