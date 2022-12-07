@@ -57,7 +57,7 @@
   
   - name: Copy Talend Remote Engine file
     win_copy:
-      src: /home/ansible/windowspreauthorized.key.cfg
+      src: /home/ansible/preauthorized.key.cfg
       dest: 'C:\Users\azureuser\'
   
   - name: Change configuration files for Talend
