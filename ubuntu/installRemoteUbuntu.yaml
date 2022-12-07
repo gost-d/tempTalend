@@ -60,7 +60,28 @@
       with_items: 
         - { var1: "org.talend.remote.jobserver.server.TalendJobServer.COMMAND_SERVER_HOST=*", var2: org.talend.remote.jobserver.server.TalendJobServer.COMMAND_SERVER_HOST=0.0.0.0 }
         - { var1: "org.talend.remote.jobserver.server.TalendJobServer.FILE_SERVER_HOST=*", var2: org.talend.remote.jobserver.server.TalendJobServer.FILE_SERVER_HOST=0.0.0.0} 
-       
+    
+    - name: Change wrapper config file for Talend Sudio connection
+      ansible.builtin.lineinfile:
+        path: /home/{{ ansible_user }}/Talend-RemoteEngine-V{{ tre_version }}/etc/Talend-Remote-Engine-wrapper.conf 
+        line: wrapper.java.maxmemory=4096
+        create: yes 
+    
+    - name: Change deployment agent config file for Talend Sudio connection
+      ansible.builtin.lineinfile:
+        path: /home/{{ ansible_user }}/Talend-RemoteEngine-V{{ tre_version }}/etc/org.talend.ipaas.rt.deployment.agent.cfg
+        regexp: "max.deployed.flows=*"
+        line: "max.deployed.flows=0"
+    
+    - name: Change jobserver config file for Talend Sudio connection
+      ansible.builtin.lineinfile:
+        path: /home/{{ ansible_user }}/Talend-RemoteEngine-V{{ tre_version }}/etc/org.talend.eventlogging.agenct.cfg
+        line: "{{ item }}"
+        create: yes
+      with_items: 
+        - "agent.buffer.jms.username=tadmin"
+        - "agent.buffer.jms.password=tadmin"
+    
     - name: Install Remote Engine
       become: true
       ansible.builtin.shell: |
