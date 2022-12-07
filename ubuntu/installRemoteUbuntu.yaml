@@ -48,7 +48,7 @@
     - name: Prepare environment
       become: true
       ansible.builtin.shell: |
-        export PAIRING_KEY=$(cat ubuntupreauthorized.key.cfg)
+        export PAIRING_KEY=$(cat preauthorized.key.cfg)
         echo "remote.engine.pre.authorized.key = $PAIRING_KEY" > 'Talend-RemoteEngine-V{{ tre_version }}/etc/preauthorized.key.cfg'
         echo "pairing.service.url=https://pair.eu.cloud.talend.com" > 'Talend-RemoteEngine-V{{ tre_version }}/etc/org.talend.ipaas.rt.pairing.client.cfg'
     
