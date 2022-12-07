@@ -28,7 +28,7 @@
     
     - name: Copy key for Talend Remote Engine 
       ansible.builtin.copy:
-        src: /home/ansible/ubuntupreauthorized.key.cfg
+        src: /home/ansible/preauthorized.key.cfg
         dest: '/home/{{ ansible_user }}/'
         mode: '0644'
     
