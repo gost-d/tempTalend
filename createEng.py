@@ -90,9 +90,9 @@ try:
     vmDistribution = sys.argv[1]
     enableDebugInStudio = sys.argv[2]
     env = sys.argv[3]
-    workSpaceName = sys.argv[4]
-    workSpaceOwner = sys.argv[5]
-    pToken = "Bearer " + sys.argv[6]
+    workSpaceName = sys.argv[5]
+    workSpaceOwner = sys.argv[6]
+    pToken = "Bearer " + sys.argv[4]
     name="testName"
     key, engineName = createRemoteEngine(vmDistribution=vmDistribution, enableDebugInStudio=enableDebugInStudio, wrkSpaceName=workSpaceName, wrkSpaceOwner = workSpaceOwner, name=name, env=env, personalToken = pToken)
     with open('/home/python/preauthorized.key.cfg', 'w') as f:
