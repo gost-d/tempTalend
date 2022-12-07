@@ -73,7 +73,7 @@
         regexp: "max.deployed.flows=*"
         line: "max.deployed.flows=0"
     
-    - name: Change jobserver config file for Talend Sudio connection
+    - name: Change eventlogging config file for Talend Sudio connection
       ansible.builtin.lineinfile:
         path: /home/{{ ansible_user }}/Talend-RemoteEngine-V{{ tre_version }}/etc/org.talend.eventlogging.agenct.cfg
         line: "{{ item }}"

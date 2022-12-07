@@ -74,7 +74,31 @@
     with_items: 
       - { var1: "org.talend.remote.jobserver.server.TalendJobServer.COMMAND_SERVER_HOST=*", var2: org.talend.remote.jobserver.server.TalendJobServer.COMMAND_SERVER_HOST=0.0.0.0 }
       - { var1: "org.talend.remote.jobserver.server.TalendJobServer.FILE_SERVER_HOST=*", var2: org.talend.remote.jobserver.server.TalendJobServer.FILE_SERVER_HOST=0.0.0.0} 
-        
+    
+  - name: Change wrapper config file for Talend Sudio connection
+    community.windows.win_lineinfile:
+      path: C:\Users\azureuser\Talend-RemoteEngine-V{{ tre_version }}\etc/Talend-Remote-Engine-wrapper.conf 
+      line: wrapper.java.maxmemory=4096
+      create: yes 
+    
+  - name: Change deployment agent config file for Talend Sudio connection
+    community.windows.win_lineinfile:
+      path: C:\Users\azureuser\Talend-RemoteEngine-V{{ tre_version }}\etc\org.talend.ipaas.rt.deployment.agent.cfg
+      regexp: "max.deployed.flows=*"
+      line: "max.deployed.flows=0"
+    
+  - name: Change eventlogging config file for Talend Sudio connection
+    community.windows.win_lineinfile:
+      path: C:\Users\azureuser\Talend-RemoteEngine-V{{ tre_version }}\etc\org.talend.eventlogging.agenct.cfg
+      line: "{{ item }}"
+      create: yes
+    with_items: 
+      - "agent.buffer.jms.username=tadmin"
+      - "agent.buffer.jms.password=tadmin"
+  - name: Create file 
+    ansible.windows.win_file:
+      path: C:\_SXS\TalendRemoteEngine\etc\org.ops4j.pax.logging.cfg 
+       
   - name: Install Remote Talend Engine
     ansible.windows.win_powershell: 
       script: |
