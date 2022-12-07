@@ -6,7 +6,7 @@ from datetime import datetime
 import sys
 
 
-pToken = "Bearer wHiwDdZWTTasSdvCFIxNmwcSXglP2ozKgnU7qdpKXP1-Sh1z3ygwyJcNkVF6z4H5"
+pToken = ""
 
 
 def getWorkSpaceAndEnvIds(env="default", wrkSpaceOwner = "", wrkSpaceName = "", personalToken = pToken):
