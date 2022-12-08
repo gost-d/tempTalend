@@ -89,8 +89,9 @@
   - name: Change wrapper config file for Talend Sudio connection
     community.windows.win_lineinfile:
       path: C:\Users\azureuser\Talend-RemoteEngine-V{{ tre_version }}\etc/Talend-Remote-Engine-wrapper.conf 
-      line: wrapper.java.maxmemory=4096
-      create: yes 
+      regexp: "wrapper.java.maxmemory=*"
+      line: "wrapper.java.maxmemory=4096"
+      
     
   - name: Change deployment agent config file for Talend Sudio connection
     community.windows.win_lineinfile:
